@@ -29,10 +29,12 @@ variable "org_id" {
 
 variable "credentials" {
   type = string
+  default = ""
 }
 
 variable "impersonate_service_account" {
   type = string
+  default = ""
 }
 
 variable "root_folder_name" {
