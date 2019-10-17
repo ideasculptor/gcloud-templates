@@ -58,9 +58,8 @@ module "root-folder" {
 
 # The root project for infrastructure
 module "root-project" {
-#  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=gsuite_impersonate_sa"
-#  version                 = "3.3.1"
+  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
+  version                 = "3.3.1"
 
   folder_id               = module.root-folder.id
   billing_account         = var.billing_account_id
@@ -82,7 +81,6 @@ module "root-project" {
   bucket_location         = var.bucket_location
 
   credentials_path        = var.credentials
-  # impersonate_service_account = var.impersonate_service_account
 }
 
 module "folder-iam" {
