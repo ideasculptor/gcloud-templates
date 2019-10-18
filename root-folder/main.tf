@@ -45,6 +45,14 @@ provider "gsuite" {
   ]
 }
 
+locals {
+  group_name = "${var.infrastructure_short_name}${var.group_name_suffix}"
+  root_project_id_prefix = "${var.infrastructure_short_name}${var.root_project_id_suffix}"
+  sa_group = "${var.infrastructure_short_name}${var.sa_group_suffix}"
+  bucket_name = "${var.infrastructure_short_name}${var.bucket_name_suffix}"
+  logs_bucket_name = "${var.infrastructure_short_name}${var.logs_bucket_name_suffix}"
+}
+
 # A folder to serve as the root of the infrastructure
 module "root-folder" {
   source            = "terraform-google-modules/folders/google"
@@ -62,20 +70,20 @@ module "root-project" {
   folder_id               = module.root-folder.id
   billing_account         = var.billing_account_id
   create_group            = var.create_group
-  group_name              = var.group_name
+  group_name              = local.group_name
   group_role              = var.group_role
-  project_id              = var.root_project_id_prefix
+  project_id              = local.root_project_id_prefix
   random_project_id       = var.random_project_id
   name                    = var.root_project_name
-  org_id                  = var.org_id
-  sa_group                = var.sa_group
+  org_id                  = var.organization
+  sa_group                = local.sa_group
   default_service_account = "delete"
   lien                    = "true"
 
   activate_apis           = var.project_services
 
-  bucket_name             = var.bucket_name
-  bucket_project          = var.root_project_id_prefix
+  bucket_name             = local.bucket_name
+  bucket_project          = local.root_project_id_prefix
   bucket_location         = var.bucket_location
 
   credentials_path        = var.credentials
@@ -100,7 +108,7 @@ module "org-iam" {
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
-  organizations = [var.org_id]
+  organizations = [var.organization]
   organizations_num = 1
 
   mode = "additive"
@@ -109,9 +117,9 @@ module "org-iam" {
 }
 
 resource "gsuite_group_member" "admin_group_member" {
-  count = var.sa_group != "" ? var.admin_members_num : 0
+  count = var.admin_members_num
 
-  group = var.sa_group
+  group = module.root-project.group_email
   email = element(var.admin_members, count.index)
   role  = "MEMBER"
 }
@@ -125,22 +133,28 @@ module "logs-project" {
   billing_account         = var.billing_account_id
   group_name              = module.root-project.group_name
   group_role              = var.group_role
-  project_id              = "${var.root_project_id_prefix}-logs"
+  project_id              = "${local.root_project_id_prefix}-logs"
   random_project_id       = var.random_project_id
   name                    = var.log_project_name
-  org_id                  = var.org_id
-  sa_group                = var.sa_group
+  org_id                  = var.organization
+  sa_group                = local.sa_group
   default_service_account = "delete"
   lien                    = "true"
 
   activate_apis           = concat(var.project_services, ["storage-component.googleapis.com"])
 
-  bucket_name             = var.log_bucket_name
-  bucket_project          = "${var.root_project_id_prefix}-logs"
+  bucket_name             = local.logs_bucket_name
+  bucket_project          = "${local.root_project_id_prefix}-logs"
   bucket_location         = var.bucket_location
 
   impersonate_service_account = module.root-project.service_account_email
   pip3_extra_flags        = "--user"
+}
+
+resource "google_storage_bucket_iam_member" "log_service" {
+  bucket = module.logs-project.project_bucket_name[0]
+  role = "roles/storage.objectCreator"
+  member = "group:cloud-storage-analytics@google.com"
 }
 
 module "log_export" {
@@ -153,9 +167,14 @@ module "log_export" {
   unique_writer_identity = "true"
 }
 
-resource "google_storage_bucket_iam_member" "root_storage_sink_member" {
+resource "google_storage_bucket_iam_member" "logs_storage_sink_member" {
   bucket = module.logs-project.project_bucket_name[0]
   role   = "roles/storage.objectCreator"
   member = module.log_export.writer_identity
 }
 
+resource "google_project_usage_export_bucket" "usage_report_export" {
+  project     = module.root-project.project_id
+  bucket_name = module.logs-project.project_bucket_name[0]
+  prefix      = "usage/${local.root_project_id_prefix}"
+}
