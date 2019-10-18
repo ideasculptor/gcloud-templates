@@ -44,6 +44,11 @@ output "group_email" {
   description = "The email of the created GSuite group with group_name"
 }
 
+output "group_name" {
+  value       = module.root-project.group_name
+  description = "The email of the created GSuite group with group_name"
+}
+
 output "service_account_id" {
   value       = module.root-project.service_account_id
   description = "The id of the default service account"

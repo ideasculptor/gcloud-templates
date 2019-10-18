@@ -63,7 +63,11 @@ variable "random_project_id" {
 }
 
 variable "root_project_name" {
-  default = "Reference Architecture Root"
+  default = "Reference Infrastructure Root"
+}
+
+variable "log_project_name" {
+  default = "Reference Infrastructure Logs"
 }
 
 variable "sa_group" {
@@ -88,7 +92,44 @@ variable "bucket_name" {
   default = "refarch_root_tf_state"
 }
 
+variable "log_bucket_name" {
+  default = "refarch_logs_ideascuptor"
+}
+
 variable "bucket_location" {
   default = "us-west1"
 }
 
+variable "admin_members_num" {
+  default = 0
+}
+
+variable "admin_members" {
+  type = list(string)
+  default = []
+}
+
+variable "org_roles" {
+  default = [ "roles/resourcemanager.organizationViewer" ]
+}
+
+variable "org_roles_num" {
+  default = 1
+}
+
+variable "folder_roles" {
+  default = [
+    "roles/resourcemanager.folderAdmin",
+    "roles/resourcemanager.projectCreator",
+    "roles/owner",
+    "roles/billing.projectManager",
+    "roles/iam.serviceAccountAdmin",
+    "roles/iam.serviceAccountKeyAdmin",
+    "roles/servicemanagement.admin",
+    "roles/serviceusage.serviceUsageAdmin",
+  ]
+}
+
+variable "folder_roles_num" {
+  default = 8
+}

@@ -13,14 +13,12 @@
 # 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-terraform {
+terraform { 
   required_version = ">= 0.12"
   backend "gcs" {}
 }
 
 provider "google" {
-  credentials = var.credentials
   version = "~> 2.7.0"
   scopes = [
     "https://www.googleapis.com/auth/compute",
@@ -29,7 +27,6 @@ provider "google" {
 }
 
 provider "google-beta" {
-  credentials = var.credentials
   version = "~> 2.7.0"
   scopes = [
     "https://www.googleapis.com/auth/compute",
@@ -58,8 +55,9 @@ module "root-folder" {
 
 # The root project for infrastructure
 module "root-project" {
-  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-  version                 = "3.3.1"
+#  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
+#  version                 = "3.3.1"
+  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_group_name"
 
   folder_id               = module.root-folder.id
   billing_account         = var.billing_account_id
@@ -81,6 +79,7 @@ module "root-project" {
   bucket_location         = var.bucket_location
 
   credentials_path        = var.credentials
+  pip3_extra_flags        = "--user"
 }
 
 module "folder-iam" {
@@ -92,17 +91,71 @@ module "folder-iam" {
   folders_num = 1
 
   mode = "additive"
-  bindings_num = 3
-  bindings = {
-    "roles/resourcemanager.folderEditor" = [
-      "group:${module.root-project.group_email}",
-    ]
-    "roles/resourcemanager.projectCreator" = [
-      "group:${module.root-project.group_email}",
-    ]
-    "roles/owner" = [
-      "group:${module.root-project.group_email}",
-    ]
-  }
+  bindings_num = var.folder_roles_num
+  bindings = zipmap(var.folder_roles, [for s in var.folder_roles : [ "group:${module.root-project.group_email}" ]])
+}
+
+module "org-iam" {
+  source  = "terraform-google-modules/iam/google//modules/organizations_iam"
+
+  # Why is this necessary, module authors?  The resource returns the value,
+  # how about an output to match?
+  organizations = [var.org_id]
+  organizations_num = 1
+
+  mode = "additive"
+  bindings_num = var.org_roles_num
+  bindings = zipmap(var.org_roles, [for s in var.org_roles : [ "group:${module.root-project.group_email}" ]])
+}
+
+resource "gsuite_group_member" "admin_group_member" {
+  count = var.sa_group != "" ? var.admin_members_num : 0
+
+  group = var.sa_group
+  email = element(var.admin_members, count.index)
+  role  = "MEMBER"
+}
+
+module "logs-project" {
+#  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
+#  version                 = "3.3.1"
+  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_group_name"
+
+  folder_id               = module.root-folder.id
+  billing_account         = var.billing_account_id
+  group_name              = module.root-project.group_name
+  group_role              = var.group_role
+  project_id              = "${var.root_project_id_prefix}-logs"
+  random_project_id       = var.random_project_id
+  name                    = var.log_project_name
+  org_id                  = var.org_id
+  sa_group                = var.sa_group
+  default_service_account = "delete"
+  lien                    = "true"
+
+  activate_apis           = concat(var.project_services, ["storage-component.googleapis.com"])
+
+  bucket_name             = var.log_bucket_name
+  bucket_project          = "${var.root_project_id_prefix}-logs"
+  bucket_location         = var.bucket_location
+
+  impersonate_service_account = module.root-project.service_account_email
+  pip3_extra_flags        = "--user"
+}
+
+module "log_export" {
+  source                 = "terraform-google-modules/log-export/google"
+  destination_uri        = "storage.googleapis.com/${module.logs-project.project_bucket_name[0]}"
+  filter                 = "severity >= ERROR"
+  log_sink_name          = "root_project_logsink"
+  parent_resource_id     = module.root-project.project_id
+  parent_resource_type   = "project"
+  unique_writer_identity = "true"
+}
+
+resource "google_storage_bucket_iam_member" "root_storage_sink_member" {
+  bucket = module.logs-project.project_bucket_name[0]
+  role   = "roles/storage.objectCreator"
+  member = module.log_export.writer_identity
 }
 
