@@ -35,8 +35,8 @@ provider "google-beta" {
 }
 
 provider "gsuite" {
-  credentials = var.credentials
-  impersonated_user_email = "sgendler@ideasculptor.com"
+  credentials = var.gsuite_credentials
+  impersonated_user_email = var.impersonate_gsuite_user
   version = "~> 0.1.12"
   oauth_scopes = [
     "https://www.googleapis.com/auth/admin.directory.group",
@@ -86,7 +86,7 @@ module "root-project" {
   bucket_project          = local.root_project_id_prefix
   bucket_location         = var.bucket_location
 
-  credentials_path        = var.credentials
+  credentials_path        = var.gsuite_credentials
   pip3_extra_flags        = "--user"
 }
 

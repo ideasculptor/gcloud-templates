@@ -14,6 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+variable "gsuite_credentials" {
+  type = string
+}
+
+variable "impersonate_gsuite_user" {
+  type = string
+}
+
 variable "infrastructure_short_name" {
   type = string
   default = "refarch"
@@ -30,11 +38,6 @@ variable "billing_account_id" {
 
 variable "organization" {
   type = string
-}
-
-variable "credentials" {
-  type = string
-  default = ""
 }
 
 variable "impersonate_service_account" {

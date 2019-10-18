@@ -35,6 +35,17 @@ provider "google-beta" {
   ]
 }
 
+provider "gsuite" {
+  credentials = var.gsuite_credentials
+  impersonated_user_email = var.impersonate_gsuite_user
+  version = "~> 0.1.12"
+  oauth_scopes = [
+    "https://www.googleapis.com/auth/admin.directory.group",
+    "https://www.googleapis.com/auth/admin.directory.user",
+    "https://www.googleapis.com/auth/admin.directory.userschema",
+  ]
+}
+
 data "terraform_remote_state" "parent" {
   backend = "gcs"
   config = {
@@ -86,7 +97,7 @@ module "project" {
   usage_bucket_name       = data.terraform_remote_state.parent.outputs.logs_bucket_name
   usage_bucket_prefix     = "usage/${local.project_id_prefix}"
 
-  impersonate_service_account = data.terraform_remote_state.parent.outputs.service_account_email
+  credentials_path        = var.gsuite_credentials
   pip3_extra_flags        = "--user"
 }
 

@@ -14,6 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+variable "gsuite_credentials" {
+  type = string
+}
+
+variable "impersonate_gsuite_user" {
+  type = string
+}
+
 variable "terraform_state_bucket" {
   type = string
 }
