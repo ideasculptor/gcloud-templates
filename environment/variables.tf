@@ -22,14 +22,20 @@ variable "impersonate_gsuite_user" {
   type = string
 }
 
-variable "infrastructure_short_name" {
+variable "terraform_state_bucket" {
   type = string
-  default = "refarch"
 }
 
-variable "root_node" {
-  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
-  type        = string
+variable "terraform_state_prefix" {
+  type = string
+}
+
+variable "parent_path" {
+  type = string
+}
+
+variable "parent_template" {
+  type = string
 }
 
 variable "billing_account_id" {
@@ -40,46 +46,20 @@ variable "organization" {
   type = string
 }
 
-variable "impersonate_service_account" {
-  type = string
-  default = ""
-}
-
-variable "root_folder_name" {
-  description = "Name of the root folder to create"
-  default = "Reference Infrastructure"
+variable "environment" {
+  description = "Name of the environment to create"
 }
 
 variable "create_group" {
   default = "true"
 }
 
-variable "group_name_suffix" {
-  default = "-root-admin"
-}
-
 variable "group_role" {
   default = "roles/editor"
 }
 
-variable "root_project_id_suffix" {
-  default = "-root"
-}
-
 variable "random_project_id" {
   default = "true"
-}
-
-variable "root_project_name" {
-  default = "Reference Infrastructure Root"
-}
-
-variable "log_project_name" {
-  default = "Reference Infrastructure Logs"
-}
-
-variable "sa_group_suffix" {
-  default = "-root-admin@ideasculptor.com"
 }
 
 variable "project_services" {
@@ -94,18 +74,6 @@ variable "project_services" {
     "serviceusage.googleapis.com",
     "storage-api.googleapis.com",
   ]
-}
-
-variable "bucket_name_suffix" {
-  default = "_root_tf_state"
-}
-
-variable "logs_bucket_name_suffix" {
-  default = "_logs_ideascuptor"
-}
-
-variable "bucket_location" {
-  default = "us-west1"
 }
 
 variable "admin_members_num" {

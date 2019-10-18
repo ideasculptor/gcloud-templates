@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+output "infrastructure_short_name" {
+  value = var.infrastructure_short_name
+}
+
 output "folder_id" {
   value = module.root-folder.id
 }
@@ -41,6 +45,11 @@ output "domain" {
 
 output "group_email" {
   value       = module.root-project.group_email
+  description = "The email of the created GSuite group with group_name"
+}
+
+output "group_name" {
+  value       = module.root-project.group_name
   description = "The email of the created GSuite group with group_name"
 }
 
@@ -80,10 +89,62 @@ output "project_bucket_url" {
 }
 
 output "project_bucket_name" {
-  value = var.bucket_name
+  value       = module.root-project.project_bucket_name[0]
 }
 
 output "project_bucket_location" {
   value = var.bucket_location
 }
 
+output "logs_project_name" {
+  value = module.logs-project.project_name
+}
+
+output "logs_project_id" {
+  value = module.logs-project.project_id
+}
+
+output "logs_project_number" {
+  value = module.logs-project.project_number
+}
+
+output "logs_group_email" {
+  value       = module.logs-project.group_email
+}
+
+output "logs_group_name" {
+  value       = module.logs-project.group_name
+}
+
+output "logs_service_account_id" {
+  value       = module.logs-project.service_account_id
+}
+
+output "logs_service_account_display_name" {
+  value       = module.logs-project.service_account_display_name
+}
+
+output "logs_service_account_email" {
+  value       = module.logs-project.service_account_email
+}
+
+output "logs_service_account_name" {
+  value       = module.logs-project.service_account_name
+}
+
+output "logs_service_account_unique_id" {
+  value       = module.logs-project.service_account_unique_id
+}
+
+
+output "logs_bucket_name" {
+  value       = module.logs-project.project_bucket_name[0]
+}
+
+output "logs_bucket_url" {
+  value       = module.logs-project.project_bucket_url[0]
+}
+
+output "logs_bucket_location" {
+  value = var.bucket_location
+}
