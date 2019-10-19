@@ -13,37 +13,6 @@
 # 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-terraform { 
-  required_version = ">= 0.12"
-  backend "gcs" {}
-}
-
-provider "google" {
-  version = "~> 2.7.0"
-  scopes = [
-    "https://www.googleapis.com/auth/compute",
-    "https://www.googleapis.com/auth/cloud-platform",
-  ]
-}
-
-provider "google-beta" {
-  version = "~> 2.7.0"
-  scopes = [
-    "https://www.googleapis.com/auth/compute",
-    "https://www.googleapis.com/auth/cloud-platform",
-  ]
-}
-
-provider "gsuite" {
-  credentials = var.gsuite_credentials
-  impersonated_user_email = var.impersonate_gsuite_user
-  version = "~> 0.1.12"
-  oauth_scopes = [
-    "https://www.googleapis.com/auth/admin.directory.group",
-    "https://www.googleapis.com/auth/admin.directory.user",
-    "https://www.googleapis.com/auth/admin.directory.userschema",
-  ]
-}
 
 locals {
   group_name = "${var.infrastructure_short_name}${var.group_name_suffix}"
