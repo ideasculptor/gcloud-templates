@@ -51,7 +51,7 @@ module "project" {
   sa_group                = local.sa_group
   default_service_account = "delete"
   lien                    = "true"
-
+  auto_create_network     = "false"
   activate_apis           = var.project_services
 
   usage_bucket_name       = data.terraform_remote_state.parent.outputs.logs_bucket_name
