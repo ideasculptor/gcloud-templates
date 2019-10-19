@@ -15,11 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 output "folder_id" {
-  value = data.terraform_remote_state.env.outputs.folder_id
+  value = data.terraform_remote_state.parent.outputs.folder_id
 }
 
 output "folder" {
-  value = data.terraform_remote_state.env.outputs.folder
+  value = data.terraform_remote_state.parent.outputs.folder
 }
 
 output "project_name" {

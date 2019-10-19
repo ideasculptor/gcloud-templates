@@ -48,7 +48,7 @@ module "root-project" {
   sa_group                = local.sa_group
   default_service_account = "delete"
   lien                    = "true"
-
+  auto_create_network     = "false"
   activate_apis           = var.project_services
 
   bucket_name             = local.bucket_name
@@ -109,7 +109,7 @@ module "logs-project" {
   sa_group                = local.sa_group
   default_service_account = "delete"
   lien                    = "true"
-
+  auto_create_network     = "true"
   activate_apis           = concat(var.project_services, ["storage-component.googleapis.com"])
 
   bucket_name             = local.logs_bucket_name

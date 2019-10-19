@@ -24,7 +24,7 @@ locals {
   sa_group = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
-# The servicer-project specifically for this environment
+# The service-project specifically for this environment
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
@@ -42,7 +42,7 @@ module "project" {
   sa_group                = local.sa_group
   default_service_account = "delete"
   lien                    = "true"
-
+  auto_create_network     = "false"
   activate_apis           = var.project_services
 
   usage_bucket_name       = data.terraform_remote_state.parent.outputs.logs_bucket_name
@@ -50,6 +50,9 @@ module "project" {
 
   credentials_path        = var.gsuite_credentials
   pip3_extra_flags        = "--user"
+
+  shared_vpc_enabled      = "true"
+  shared_vpc              = data.terraform_remote_state.env.outputs.project_id
 }
 
 module "folder-iam" {

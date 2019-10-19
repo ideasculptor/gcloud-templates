@@ -15,25 +15,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 locals {
-  env_name = "${var.environment} env - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  project_name = "${var.environment} project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name = "refarch-${var.environment}-admin"
-  project_id_prefix = "refarch-${var.environment}"
+  # Why is this necessary, module authors?  The resource returns the value,
+  # how about an output to match?
+  folder_id = regex("folders/(.+)", data.terraform_remote_state.parent.outputs.folder_id)[0]
+  project_name = "shared services - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  group_name = "refarch-shared-svc-admin"
+  project_id_prefix = "refarch-shared-svc"
   sa_group = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
-module "folder" {
-  source = "terraform-google-modules/folders/google"
-  version = "~> 2.0"
-  parent = data.terraform_remote_state.parent.outputs.folder_id
-  names = [local.env_name]
-}
-
-locals {
-  folder_id = regex("folders/(.+)", module.folder.id)[0]
-}
-
-# The root project for infrastructure
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
@@ -64,8 +54,6 @@ module "project" {
 module "folder-iam" {
   source  = "terraform-google-modules/iam/google//modules/folders_iam"
 
-  # Why is this necessary, module authors?  The resource returns the value,
-  # how about an output to match?
   folders = [local.folder_id]
   folders_num = 1
 
@@ -101,13 +89,19 @@ resource "gsuite_group_member" "admin_group_member" {
   role  = "MEMBER"
 }
 
-module "vpc" {
-  source  = "terraform-google-modules/network/google"
-  version                 = "~> 1.4.0"
+module "dev-shared-vpc-access" {
+  source = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
+  version = "~> 1.3.0"
 
-  project_id   = module.project.project_id
-  network_name = "${var.environment}-vpc"
-
-  shared_vpc_host                        = true
-  subnets = []
+  host_project_id     = data.terraform_remote_state.dev.outputs.project_id
+  service_project_num = 1
+  service_project_ids = [module.project.project_id]
+  host_subnet_users   = [
+    "group:${module.project.group_email}"
+  ]
+  host_service_agent_role = true
+  host_service_agent_users = [
+    "group:${module.project.group_email}"
+  ]
 }
+
