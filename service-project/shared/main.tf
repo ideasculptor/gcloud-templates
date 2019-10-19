@@ -17,14 +17,13 @@
 locals {
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
-  folder_id = regex("folders/(.+)", data.terraform_remote_state.env.outputs.folder_id)[0]
-  project_name = "${var.environment} service project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name = "refarch-${var.environment}-svc-admin"
-  project_id_prefix = "refarch-${var.environment}-svc"
+  folder_id = regex("folders/(.+)", data.terraform_remote_state.parent.outputs.folder_id)[0]
+  project_name = "shared services - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  group_name = "refarch-shared-svc-admin"
+  project_id_prefix = "refarch-shared-svc"
   sa_group = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
-# The service-project specifically for this environment
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
@@ -50,9 +49,6 @@ module "project" {
 
   credentials_path        = var.gsuite_credentials
   pip3_extra_flags        = "--user"
-
-  shared_vpc_enabled      = "true"
-  shared_vpc              = data.terraform_remote_state.env.outputs.project_id
 }
 
 module "folder-iam" {
@@ -92,3 +88,20 @@ resource "gsuite_group_member" "admin_group_member" {
   email = element(var.admin_members, count.index)
   role  = "MEMBER"
 }
+
+module "dev-shared-vpc-access" {
+  source = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
+  version = "~> 1.3.0"
+
+  host_project_id     = data.terraform_remote_state.dev.outputs.project_id
+  service_project_num = 1
+  service_project_ids = [module.project.project_id]
+  host_subnet_users   = [
+    "group:${module.project.group_email}"
+  ]
+  host_service_agent_role = true
+  host_service_agent_users = [
+    "group:${module.project.group_email}"
+  ]
+}
+
