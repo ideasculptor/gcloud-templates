@@ -15,25 +15,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 locals {
-  env_name = "${var.environment} env - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  project_name = "${var.environment} project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name = "refarch-${var.environment}-admin"
-  project_id_prefix = "refarch-${var.environment}"
+  # Why is this necessary, module authors?  The resource returns the value,
+  # how about an output to match?
+  folder_id = regex("folders/(.+)", data.terraform_remote_state.env.outputs.folder_id)[0]
+  project_name = "${var.environment} service project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  group_name = "refarch-${var.environment}-svc-admin"
+  project_id_prefix = "refarch-${var.environment}-svc"
   sa_group = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
-module "folder" {
-  source = "terraform-google-modules/folders/google"
-  version = "~> 2.0"
-  parent = data.terraform_remote_state.parent.outputs.folder_id
-  names = [local.env_name]
-}
-
-locals {
-  folder_id = regex("folders/(.+)", module.folder.id)[0]
-}
-
-# The root project for infrastructure
+# The servicer-project specifically for this environment
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
@@ -64,8 +55,6 @@ module "project" {
 module "folder-iam" {
   source  = "terraform-google-modules/iam/google//modules/folders_iam"
 
-  # Why is this necessary, module authors?  The resource returns the value,
-  # how about an output to match?
   folders = [local.folder_id]
   folders_num = 1
 
@@ -100,4 +89,3 @@ resource "gsuite_group_member" "admin_group_member" {
   email = element(var.admin_members, count.index)
   role  = "MEMBER"
 }
-
