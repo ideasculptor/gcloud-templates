@@ -50,6 +50,9 @@ module "project" {
 
   credentials_path        = var.gsuite_credentials
   pip3_extra_flags        = "--user"
+
+  shared_vpc_enabled      = "true"
+  shared_vpc              = data.terraform_remote_state.env.outputs.project_id
 }
 
 module "folder-iam" {

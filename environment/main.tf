@@ -101,3 +101,13 @@ resource "gsuite_group_member" "admin_group_member" {
   role  = "MEMBER"
 }
 
+module "vpc" {
+  source  = "terraform-google-modules/network/google"
+  version                 = "~> 1.4.0"
+
+  project_id   = module.project.project_id
+  network_name = "${var.environment}-vpc"
+
+  shared_vpc_host                        = true
+  subnets = []
+}
