@@ -28,6 +28,9 @@ module "subnets" {
 
   shared_vpc_host = var.shared_vpc_host
   create_network  = var.create_network
+  routing_mode    = var.routing_mode
+  auto_create_subnetworks = var.auto_create_subnetworks
+  delete_default_internet_gateway_routes = var.delete_default_internet_gateway_routes
 
   subnets = [for subnet in var.subnets: {
     subnet_name = "${var.environment}-${var.region}-${subnet.subnet_name}"
@@ -41,5 +44,18 @@ module "subnets" {
     range_name = "${var.environment}-${var.region}-${range_name}-${range_val.range_name}"
     ip_cidr_range = range_val.ip_cidr_range
   }]}
+
+  routes = [for route in var.routes: {
+    name = "${data.terraform_remote_state.env.outputs.network_name}-${route.name}"
+    description = lookup(route, "description", "")
+    destination_range = route.destination_range
+    tags = route.tags
+    next_hop_internet = lookup(route, "next_hop_internet", "false")
+    next_hop_ip = lookup(route, "next_hop_ip", "")
+    next_hop_instance = lookup(route, "next_hop_instance", "")
+    next_hop_instance_zone = lookup(route, "next_hop_instance_zone", "")
+    next_hop_vpn_tunnel = lookup(route, "next_hop_vpn_tunnel", "")
+    priority = lookup(route, "priority", "1000")
+  }]
 }
 
