@@ -18,9 +18,9 @@ locals {
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
   folder_id = regex("folders/(.+)", data.terraform_remote_state.parent.outputs.folder_id)[0]
-  project_name = "shared services - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name = "refarch-shared-svc-admin"
-  project_id_prefix = "refarch-shared-svc"
+  project_name = "${var.project_short_name} svc - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  group_name = "refarch-${var.project_short_name}-svc-admin"
+  project_id_prefix = "refarch-${var.project_short_name}-svc"
   sa_group = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 

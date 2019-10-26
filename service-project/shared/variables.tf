@@ -38,6 +38,10 @@ variable "parent_template" {
   type = string
 }
 
+variable "project_short_name" {
+  type = string
+}
+
 variable "billing_account_id" {
   type = string
 }
