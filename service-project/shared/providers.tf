@@ -20,7 +20,7 @@ terraform {
 }
 
 provider "google" {
-  version = "~> 2.7.0"
+  version = "~> 2.18.1"
   scopes = [
     "https://www.googleapis.com/auth/cloud-platform",
     "https://www.googleapis.com/auth/compute",
@@ -28,7 +28,7 @@ provider "google" {
 }
 
 provider "google-beta" {
-  version = "~> 2.7.0"
+  version = "~> 2.18.1"
   scopes = [
     "https://www.googleapis.com/auth/cloud-platform",
     "https://www.googleapis.com/auth/compute",

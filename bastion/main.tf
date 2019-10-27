@@ -14,24 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-terraform {
-  required_version = ">= 0.12"
-  backend "gcs" {}
-}
+module "iap_bastion" {
+  source = "terraform-google-modules/bastion-host/google"
+  version = 0.1.0
 
-provider "google" {
-  version = "~> 2.18.1"
-  scopes = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/compute",
+  project = data.terraform_remote_state.service-project.project_id
+  region = var.region
+  zone = "${var.region}-a"
+  network = data.terraform_remote_state.env.outputs.network_self_link
+  subnet = data.terraform_remote_state.subnets.outputs.subnets_self_links[0]
+  members = [
+    "group:${data.terraform_remote_state.service-project.outputs.group_email}",
   ]
 }
-
-provider "google-beta" {
-  version = "~> 2.18.1"
-  scopes = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/compute",
-  ]
-}
-
