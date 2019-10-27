@@ -14,15 +14,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+locals {
+  subnets_map = zipmap(data.terraform_remote_state.public_subnets.outputs.subnets_names,
+                       data.terraform_remote_state.public_subnets.outputs.subnets_self_links)
+
+  admin_subnets = [
+    for subnet in data.terraform_remote_state.public_subnets.outputs.subnets_names:
+    local.subnets_map[subnet] if length(regexall("^.*-admin$", subnet)) > 0
+  ]
+}
+
 module "iap_bastion" {
   source = "terraform-google-modules/bastion-host/google"
-  version = 0.1.0
 
-  project = data.terraform_remote_state.service-project.project_id
+  project = data.terraform_remote_state.service-project.outputs.project_id
   region = var.region
   zone = "${var.region}-a"
   network = data.terraform_remote_state.env.outputs.network_self_link
-  subnet = data.terraform_remote_state.subnets.outputs.subnets_self_links[0]
+  subnet = local.admin_subnets[0]
   members = [
     "group:${data.terraform_remote_state.service-project.outputs.group_email}",
   ]

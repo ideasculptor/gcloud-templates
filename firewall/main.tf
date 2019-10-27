@@ -36,7 +36,7 @@ locals {
   )
 }
 
-module "net-firewall" {
+module "firewall" {
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = data.terraform_remote_state.vpc.outputs.project_id
   network                 = data.terraform_remote_state.vpc.outputs.network_name

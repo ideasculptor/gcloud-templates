@@ -70,6 +70,7 @@ variable "project_services" {
     "compute.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
+    "iap.googleapis.com",
     "logging.googleapis.com",
     "serviceusage.googleapis.com",
     "storage-api.googleapis.com",
