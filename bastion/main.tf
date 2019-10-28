@@ -24,9 +24,9 @@ locals {
   ]
 }
 
-module "iap_bastion" {
+module "bastion" {
   # source = "terraform-google-modules/bastion-host/google"
-  # version = "> 0.1.0"
+  # version = ">= 0.1.1"
   source = "git@github.com:terraform-google-modules/terraform-google-bastion-host.git"
 
   project = data.terraform_remote_state.service-project.outputs.project_id
