@@ -25,9 +25,11 @@ locals {
 }
 
 module "iap_bastion" {
-  source = "terraform-google-modules/bastion-host/google"
+  # source = "terraform-google-modules/bastion-host/google"
+  source = "git@github.com:ideasculptor/terraform-google-bastion-host.git?ref=host_project"
 
   project = data.terraform_remote_state.service-project.outputs.project_id
+  host_project = data.terraform_remote_state.env.outputs.project_id
   region = var.region
   zone = "${var.region}-a"
   network = data.terraform_remote_state.env.outputs.network_self_link
@@ -35,4 +37,7 @@ module "iap_bastion" {
   members = [
     "group:${data.terraform_remote_state.service-project.outputs.group_email}",
   ]
+  image = var.image
+  machine_type = var.machine_type
+  labels = var.labels
 }

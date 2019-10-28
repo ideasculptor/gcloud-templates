@@ -39,4 +39,19 @@ variable "public_subnets_path" {
   default = "public_subnets"
 }
 
+variable "image" {
+  description = "GCE image on which to base the Bastion. This image is supported by Shielded VM"
+  default     = "gce-uefi-images/centos-7"
+}
+
+variable "labels" {
+  description = "Key-value map of labels to assign to the bastion host"
+  type        = "map"
+  default     = {}
+}
+
+variable "machine_type" {
+  description = "Instance type for the Bastion host"
+  default     = "n1-standard-1"
+}
 
