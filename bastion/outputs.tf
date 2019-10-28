@@ -14,24 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-terraform {
-  required_version = ">= 0.12"
-  backend "gcs" {}
+output "service_account" {
+  description = "The email for the service account created for the bastion host"
+  value       = module.bastion.service_account
 }
 
-provider "google" {
-  version = "~> 2.18.1"
-  scopes = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/compute",
-  ]
+output "hostname" {
+  description = "Host name of the bastion"
+  value       = module.bastion.hostname
 }
 
-provider "google-beta" {
-  version = "~> 2.18.1"
-  scopes = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/compute",
-  ]
+output "ip_address" {
+  description = "Internal IP address of the bastion host"
+  value       = module.bastion.ip_address
 }
 
+output "self_link" {
+  description = "Self link of the bastion host"
+  value       = module.bastion.self_link
+}

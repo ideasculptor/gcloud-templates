@@ -14,24 +14,33 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-terraform {
-  required_version = ">= 0.12"
-  backend "gcs" {}
+variable "terraform_state_bucket" {
+  type = string
 }
 
-provider "google" {
-  version = "~> 2.18.1"
-  scopes = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/compute",
-  ]
+variable "terraform_state_prefix" {
+  type = string
 }
 
-provider "google-beta" {
-  version = "~> 2.18.1"
-  scopes = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/compute",
-  ]
+variable "parent_path" {
+  type = string
+}
+
+variable "environment" {
+  description = "Name of the environment to create"
+}
+
+variable "region" {
+  description = "Id of the region to create bastion within"
+}
+
+variable "public_subnets_path" {
+  type = string
+  default = "public_subnets"
+}
+
+variable "backend_subnets_path" {
+  type = string
+  default = "backend_subnets"
 }
 
