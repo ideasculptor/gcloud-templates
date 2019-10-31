@@ -18,7 +18,7 @@ data "terraform_remote_state" "vpc" {
   backend = "gcs"
   config = {
     bucket = var.terraform_state_bucket
-    prefix = "${var.terraform_state_prefix}/${var.environment}/environment"
+    prefix = "${var.terraform_state_prefix}/${var.parent_path}/${var.environment}/environment"
   }
 }
 
@@ -26,7 +26,15 @@ data "terraform_remote_state" "subnets" {
   backend = "gcs"
   config = {
     bucket = var.terraform_state_bucket
-    prefix = "${var.terraform_state_prefix}/${var.environment}/${var.region}/${var.environment}/${var.subnets_path}"
+    prefix = "${var.terraform_state_prefix}/${var.parent_path}/${var.environment}/${var.region}/${var.environment}/${var.subnets_path}"
+  }
+}
+
+data "terraform_remote_state" "service_project" {
+  backend = "gcs"
+  config = {
+    bucket = var.terraform_state_bucket
+    prefix = "${var.terraform_state_prefix}/${var.parent_path}/shared/service-project"
   }
 }
 

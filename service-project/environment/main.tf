@@ -28,7 +28,7 @@ locals {
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
-  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_group_name"
+  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -55,6 +55,22 @@ module "project" {
   shared_vpc              = data.terraform_remote_state.env.outputs.project_id
 }
 
+module "org-iam" {
+  source  = "terraform-google-modules/iam/google//modules/organizations_iam"
+
+  # Why is this necessary, module authors?  The resource returns the value,
+  # how about an output to match?
+  organizations = [var.organization]
+  organizations_num = 1
+
+  mode = "additive"
+  bindings_num = var.org_roles_num
+  bindings = zipmap(
+    var.org_roles,
+    [for s in var.org_roles : [ "group:${module.project.group_email}" ]]
+  )
+}
+
 module "folder-iam" {
   source  = "terraform-google-modules/iam/google//modules/folders_iam"
 
@@ -69,19 +85,16 @@ module "folder-iam" {
   )
 }
 
-module "org-iam" {
-  source  = "terraform-google-modules/iam/google//modules/organizations_iam"
+module "projects-iam" {
+  source  = "terraform-google-modules/iam/google//modules/projects_iam"
 
-  # Why is this necessary, module authors?  The resource returns the value,
-  # how about an output to match?
-  organizations = [var.organization]
-  organizations_num = 1
+  project = module.project.project_id
 
   mode = "additive"
-  bindings_num = var.org_roles_num
+  bindings_num = var.project_roles_num
   bindings = zipmap(
-    var.org_roles,
-    [for s in var.org_roles : [ "group:${module.project.group_email}" ]]
+    var.project_roles,
+    [for s in var.project_roles : [ "group:${module.project.group_email}" ]]
   )
 }
 

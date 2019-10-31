@@ -14,4 +14,73 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+locals {
+  project_id         = data.terraform_remote_state.service_project.outputs.project_id
+  network_project_id = data.terraform_remote_state.vpc.outputs.project_id
+  network            = data.terraform_remote_state.vpc.outputs.network_name
+  subnetwork         = "${var.environment}-${var.region}-${var.subnet_short_name}"
+  ip_range_pods      = "${local.subnetwork}-${var.pods_range_short_name}"
+  ip_range_services  = "${local.subnetwork}-${var.services_range_short_name}"
+}
+
+module "gke" {
+  source = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster"
+
+  project_id                        = local.project_id
+  network_project_id                = local.network_project_id
+  registry_project_id               = local.project_id
+  name                              = "gke-${var.environment}"
+  description                       = var.description
+  region                            = var.region
+  regional                          = var.regional
+  zones                             = var.zones
+  network                           = local.network
+  subnetwork                        = local.subnetwork
+  ip_range_pods                     = local.ip_range_pods
+  ip_range_services                 = local.ip_range_services
+  service_account                   = var.service_account
+  http_load_balancing               = var.http_load_balancing
+  horizontal_pod_autoscaling        = var.horizontal_pod_autoscaling
+  kubernetes_dashboard              = var.kubernetes_dashboard
+  network_policy                    = var.network_policy
+  network_policy_provider           = var.network_policy_provider
+  cluster_resource_labels           = var.cluster_resource_labels
+  create_service_account            = var.create_service_account
+  grant_registry_access             = var.grant_registry_access
+  initial_node_count                = var.initial_node_count
+  issue_client_certificate          = var.issue_client_certificate
+  kubernetes_version                = var.kubernetes_version
+  logging_service                   = var.logging_service
+  maintenance_start_time            = var.maintenance_start_time
+  master_authorized_networks_config = var.master_authorized_networks_config
+  monitoring_service                = var.monitoring_service
+  node_pools                        = var.node_pools
+  node_pools_labels                 = var.node_pools_labels
+  node_pools_metadata               = var.node_pools_metadata
+  node_pools_oauth_scopes           = var.node_pools_oauth_scopes
+  node_pools_tags                   = var.node_pools_tags
+  node_version                      = var.node_version
+  remove_default_node_pool          = var.remove_default_node_pool
+
+  authenticator_security_group      = var.authenticator_security_group
+  cloudrun                          = var.cloudrun
+  database_encryption               = var.database_encryption
+  default_max_pods_per_node         = var.default_max_pods_per_node
+  deploy_using_private_endpoint     = var.deploy_using_private_endpoint
+  enable_binary_authorization       = var.enable_binary_authorization
+  enable_intranode_visibility       = var.enable_intranode_visibility
+  enable_private_endpoint           = var.enable_private_endpoint
+  enable_private_nodes              = var.enable_private_nodes
+#  enable_shielded_nodes             = var.enable_shielded_nodes
+  enable_vertical_pod_autoscaling   = var.enable_vertical_pod_autoscaling
+  identity_namespace                = var.identity_namespace
+  istio                             = var.istio
+  master_ipv4_cidr_block            = var.master_ipv4_cidr_block
+  node_metadata                     = var.node_metadata
+  node_pools_taints                 = var.node_pools_taints
+  pod_security_policy_config        = var.pod_security_policy_config
+#  release_channel                   = var.release_channel
+  resource_usage_export_dataset_id  = var.resource_usage_export_dataset_id
+  sandbox_enabled                   = var.sandbox_enabled  
+}
 
