@@ -28,7 +28,7 @@ locals {
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
-  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
+  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -49,7 +49,7 @@ module "project" {
   usage_bucket_prefix     = "usage/${local.project_id_prefix}"
 
   credentials_path        = var.gsuite_credentials
-  pip3_extra_flags        = "--user"
+#  pip3_extra_flags        = "--user"
 
   shared_vpc_enabled      = "true"
   shared_vpc              = data.terraform_remote_state.env.outputs.project_id

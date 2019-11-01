@@ -27,7 +27,7 @@ locals {
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
-  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
+  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -48,7 +48,10 @@ module "project" {
   usage_bucket_prefix     = "usage/${local.project_id_prefix}"
 
   credentials_path        = var.gsuite_credentials
-  pip3_extra_flags        = "--user"
+#  pip3_extra_flags        = "--user"
+
+  shared_vpc_enabled      = "true"
+  shared_vpc              = data.terraform_remote_state.dev.outputs.project_id
 }
 
 module "org-iam" {
@@ -63,7 +66,7 @@ module "org-iam" {
   bindings_num = var.org_roles_num
   bindings = zipmap(
     var.org_roles,
-    [for s in var.org_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.org_roles :  ["group:${module.project.group_email}"]]
   )
 }
 
@@ -77,22 +80,40 @@ module "folder-iam" {
   bindings_num = var.folder_roles_num
   bindings = zipmap(
     var.folder_roles,
-    [for s in var.folder_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.folder_roles : ["group:${module.project.group_email}"]]
   )
 }
 
 module "projects-iam" {
   source  = "terraform-google-modules/iam/google//modules/projects_iam"
 
-  project = module.project.project_id
+  projects = [module.project.project_id]
 
   mode = "additive"
   bindings_num = var.project_roles_num
   bindings = zipmap(
     var.project_roles,
-    [for s in var.project_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.project_roles : ["group:${module.project.group_email}"]]
   )
 }
+
+/*
+locals {
+  host_project_roles = ["roles/compute.networkUser"]
+}
+module "host-project-iam" {
+  source  = "terraform-google-modules/iam/google//modules/projects_iam"
+
+  projects = [data.terraform_remote_state.dev.outputs.project_id]
+
+  mode = "additive"
+  bindings_num = 1
+  bindings = zipmap(
+    local.host_project_roles,
+    [for s in local.host_project_roles : [ "group:${module.project.group_email}" ]]
+  )
+}
+*/
 
 resource "gsuite_group_member" "admin_group_member" {
   count = var.admin_members_num
@@ -101,7 +122,7 @@ resource "gsuite_group_member" "admin_group_member" {
   email = element(var.admin_members, count.index)
   role  = "MEMBER"
 }
-
+/*
 module "dev-shared-vpc-access" {
   source = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
   version = "~> 1.3.0"
@@ -118,4 +139,4 @@ module "dev-shared-vpc-access" {
     "serviceAccount:service-${module.project.project_number}@container-engine-robot.iam.gserviceaccount.com"
   ]
 }
-
+*/

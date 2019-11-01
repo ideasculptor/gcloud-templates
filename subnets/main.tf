@@ -21,7 +21,7 @@ locals {
 module "subnets" {
   # source          = "terraform-google-modules/network/google"
   # version         = "~> 1.4.0"
-  source          = "git@github.com:ideasculptor/terraform-google-network.git?ref=master"
+  source          = "git@github.com:terraform-google-modules/terraform-google-network.git?ref=master"
 
   project_id      = data.terraform_remote_state.env.outputs.project_id
   network_name    = data.terraform_remote_state.env.outputs.network_name

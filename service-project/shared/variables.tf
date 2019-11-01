@@ -119,11 +119,12 @@ variable "project_roles" {
     "roles/container.developer",
     "roles/iam.serviceAccountUser",
     "roles/resourcemanager.projectIamAdmin",
+    "roles/serviceusage.serviceUsageAdmin",
   ]
 }
 
 variable "project_roles_num" {
-  default = 5
+  default = 6
 }
 
 

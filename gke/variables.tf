@@ -249,8 +249,8 @@ variable "deploy_using_private_endpoint" {
 
 variable "enable_private_endpoint" {
   type        = bool
-  description = "(Beta) Whether the master's internal IP address is used as the cluster endpoint"
-  default     = true
+  description = "(Beta) Whether the master's internal IP address is used as the ONLY cluster endpoint"
+  default     = false
 }
 
 variable "enable_private_nodes" {
@@ -262,7 +262,7 @@ variable "enable_private_nodes" {
 variable "master_ipv4_cidr_block" {
   type        = string
   description = "(Beta) The IP range in CIDR notation to use for the hosted master network"
-  default     = "10.1.0.0/28"
+  default     = "10.0.0.0/28"
 }
 
 variable "istio" {
