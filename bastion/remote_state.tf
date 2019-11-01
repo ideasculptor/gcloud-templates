@@ -34,7 +34,7 @@ data "terraform_remote_state" "service-project" {
   backend = "gcs"
   config = {
     bucket = var.terraform_state_bucket
-    prefix = "${var.terraform_state_prefix}/${var.parent_path}/shared/service-project"
+    prefix = "${var.terraform_state_prefix}/${var.parent_path}/${var.environment}/service-project"
   }
 }
 

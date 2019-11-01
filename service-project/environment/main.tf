@@ -26,9 +26,8 @@ locals {
 
 # The service-project specifically for this environment
 module "project" {
-#  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-#  version                 = "3.3.1"
-  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
+  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
+#  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -88,7 +87,8 @@ module "folder-iam" {
 module "projects-iam" {
   source  = "terraform-google-modules/iam/google//modules/projects_iam"
 
-  project = module.project.project_id
+  projects = [module.project.project_id]
+  projects_num = 1
 
   mode = "additive"
   bindings_num = var.project_roles_num
