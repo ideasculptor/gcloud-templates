@@ -37,7 +37,7 @@ locals {
 module "project" {
 #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
 #  version                 = "3.3.1"
-  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_group_name"
+  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id

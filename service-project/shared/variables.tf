@@ -67,6 +67,7 @@ variable "project_services" {
   default = [
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
+    "container.googleapis.com",
     "compute.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
@@ -110,3 +111,20 @@ variable "folder_roles" {
 variable "folder_roles_num" {
   default = 8
 }
+
+variable "project_roles" {
+  default = [
+    "roles/compute.viewer",
+    "roles/container.clusterAdmin",
+    "roles/container.developer",
+    "roles/iam.serviceAccountUser",
+    "roles/resourcemanager.projectIamAdmin",
+    "roles/serviceusage.serviceUsageAdmin",
+  ]
+}
+
+variable "project_roles_num" {
+  default = 6
+}
+
+
