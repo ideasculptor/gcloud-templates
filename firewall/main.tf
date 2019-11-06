@@ -16,10 +16,10 @@
 
 locals {
   range_map = zipmap(data.terraform_remote_state.public_subnets.outputs.subnets_names,
-                     data.terraform_remote_state.public_subnets.outputs.subnets_ips)
+  data.terraform_remote_state.public_subnets.outputs.subnets_ips)
 
   admin_ranges = [
-    for range in data.terraform_remote_state.public_subnets.outputs.subnets_names:
+    for range in data.terraform_remote_state.public_subnets.outputs.subnets_names :
     local.range_map[range] if length(regexall("^.*-admin$", range)) > 0
   ]
 
@@ -27,11 +27,11 @@ locals {
     data.terraform_remote_state.public_subnets.outputs.subnets_ips,
     data.terraform_remote_state.backend_subnets.outputs.subnets_ips,
     [
-      for range in flatten(data.terraform_remote_state.public_subnets.outputs.subnets_secondary_ranges):
+      for range in flatten(data.terraform_remote_state.public_subnets.outputs.subnets_secondary_ranges) :
       range["ip_cidr_range"]
     ],
-    [for range in flatten(data.terraform_remote_state.backend_subnets.outputs.subnets_secondary_ranges):
-     range["ip_cidr_range"]
+    [for range in flatten(data.terraform_remote_state.backend_subnets.outputs.subnets_secondary_ranges) :
+      range["ip_cidr_range"]
     ]
   )
 }

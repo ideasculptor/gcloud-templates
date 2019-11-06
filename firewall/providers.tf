@@ -36,9 +36,9 @@ provider "google-beta" {
 }
 
 provider "gsuite" {
-  credentials = var.gsuite_credentials
+  credentials             = var.gsuite_credentials
   impersonated_user_email = var.impersonate_gsuite_user
-  version = "~> 0.1.12"
+  version                 = "~> 0.1.12"
   oauth_scopes = [
     "https://www.googleapis.com/auth/admin.directory.group",
     "https://www.googleapis.com/auth/admin.directory.user",

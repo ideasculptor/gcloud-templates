@@ -23,7 +23,7 @@ variable "impersonate_gsuite_user" {
 }
 
 variable "infrastructure_short_name" {
-  type = string
+  type    = string
   default = "refarch"
 }
 
@@ -41,13 +41,13 @@ variable "organization" {
 }
 
 variable "impersonate_service_account" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "root_folder_name" {
   description = "Name of the root folder to create"
-  default = "Reference Infrastructure"
+  default     = "Reference Infrastructure"
 }
 
 variable "create_group" {
@@ -113,12 +113,12 @@ variable "admin_members_num" {
 }
 
 variable "admin_members" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "org_roles" {
-  default = [ "roles/resourcemanager.organizationViewer" ]
+  default = ["roles/resourcemanager.organizationViewer"]
 }
 
 variable "org_roles_num" {

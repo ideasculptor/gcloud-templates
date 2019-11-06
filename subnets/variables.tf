@@ -39,12 +39,12 @@ variable "region" {
 }
 
 variable "shared_vpc_host" {
-  type = string
+  type    = string
   default = "false"
 }
 
 variable "create_network" {
-  type = string
+  type    = string
   default = "false"
 }
 

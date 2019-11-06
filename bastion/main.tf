@@ -16,10 +16,10 @@
 
 locals {
   subnets_map = zipmap(data.terraform_remote_state.public_subnets.outputs.subnets_names,
-                       data.terraform_remote_state.public_subnets.outputs.subnets_self_links)
+  data.terraform_remote_state.public_subnets.outputs.subnets_self_links)
 
   admin_subnets = [
-    for subnet in data.terraform_remote_state.public_subnets.outputs.subnets_names:
+    for subnet in data.terraform_remote_state.public_subnets.outputs.subnets_names :
     local.subnets_map[subnet] if length(regexall("^.*-admin$", subnet)) > 0
   ]
 }
@@ -29,16 +29,16 @@ module "bastion" {
   # version = ">= 0.1.1"
   source = "git@github.com:terraform-google-modules/terraform-google-bastion-host.git"
 
-  project = data.terraform_remote_state.service_project.outputs.project_id
+  project      = data.terraform_remote_state.service_project.outputs.project_id
   host_project = data.terraform_remote_state.env.outputs.project_id
-  region = var.region
-  zone = "${var.region}-a"
-  network = data.terraform_remote_state.env.outputs.network_self_link
-  subnet = local.admin_subnets[0]
+  region       = var.region
+  zone         = "${var.region}-a"
+  network      = data.terraform_remote_state.env.outputs.network_self_link
+  subnet       = local.admin_subnets[0]
   members = [
     "group:${data.terraform_remote_state.service_project.outputs.group_email}",
   ]
-  image = var.image
+  image        = var.image
   machine_type = var.machine_type
-  labels = var.labels
+  labels       = var.labels
 }

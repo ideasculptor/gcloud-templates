@@ -89,7 +89,7 @@ output "project_bucket_url" {
 }
 
 output "project_bucket_name" {
-  value       = module.root-project.project_bucket_name[0]
+  value = module.root-project.project_bucket_name[0]
 }
 
 output "project_bucket_location" {
@@ -109,40 +109,40 @@ output "logs_project_number" {
 }
 
 output "logs_group_email" {
-  value       = module.logs-project.group_email
+  value = module.logs-project.group_email
 }
 
 output "logs_group_name" {
-  value       = module.logs-project.group_name
+  value = module.logs-project.group_name
 }
 
 output "logs_service_account_id" {
-  value       = module.logs-project.service_account_id
+  value = module.logs-project.service_account_id
 }
 
 output "logs_service_account_display_name" {
-  value       = module.logs-project.service_account_display_name
+  value = module.logs-project.service_account_display_name
 }
 
 output "logs_service_account_email" {
-  value       = module.logs-project.service_account_email
+  value = module.logs-project.service_account_email
 }
 
 output "logs_service_account_name" {
-  value       = module.logs-project.service_account_name
+  value = module.logs-project.service_account_name
 }
 
 output "logs_service_account_unique_id" {
-  value       = module.logs-project.service_account_unique_id
+  value = module.logs-project.service_account_unique_id
 }
 
 
 output "logs_bucket_name" {
-  value       = module.logs-project.project_bucket_name[0]
+  value = module.logs-project.project_bucket_name[0]
 }
 
 output "logs_bucket_url" {
-  value       = module.logs-project.project_bucket_url[0]
+  value = module.logs-project.project_bucket_url[0]
 }
 
 output "logs_bucket_location" {

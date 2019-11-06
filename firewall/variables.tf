@@ -35,12 +35,12 @@ variable "region" {
 }
 
 variable "public_subnets_path" {
-  type = string
+  type    = string
   default = "public_subnets"
 }
 
 variable "backend_subnets_path" {
-  type = string
+  type    = string
   default = "backend_subnets"
 }
 

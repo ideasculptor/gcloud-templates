@@ -22,11 +22,11 @@ locals {
   ip_range_pods      = "${local.subnetwork}-${var.pods_range_short_name}"
   ip_range_services  = "${local.subnetwork}-${var.services_range_short_name}"
 
-  subnets            = zipmap(data.terraform_remote_state.subnets.outputs.subnets_names,
-                              data.terraform_remote_state.subnets.outputs.subnets_ips)
+  subnets = zipmap(data.terraform_remote_state.subnets.outputs.subnets_names,
+  data.terraform_remote_state.subnets.outputs.subnets_ips)
   subnet_cidr_blocks = concat(var.authorized_cidr_blocks, [
-    for name in data.terraform_remote_state.subnets.outputs.subnets_names: {
-      cidr_block = local.subnets[name]
+    for name in data.terraform_remote_state.subnets.outputs.subnets_names : {
+      cidr_block   = local.subnets[name]
       display_name = local.subnetwork
     } if name == local.subnetwork
   ])
@@ -57,46 +57,46 @@ module "gke" {
   horizontal_pod_autoscaling        = var.horizontal_pod_autoscaling
   kubernetes_dashboard              = var.kubernetes_dashboard
 
-  network_policy                    = var.network_policy
-  network_policy_provider           = var.network_policy_provider
-  cluster_resource_labels           = var.cluster_resource_labels
-  grant_registry_access             = var.grant_registry_access
-  issue_client_certificate          = var.issue_client_certificate
-  kubernetes_version                = var.kubernetes_version
-  logging_service                   = var.logging_service
-  maintenance_start_time            = var.maintenance_start_time
-  monitoring_service                = var.monitoring_service
-  node_pools                        = var.node_pools
-  node_pools_labels                 = var.node_pools_labels
-  node_pools_metadata               = var.node_pools_metadata
-  node_pools_oauth_scopes           = var.node_pools_oauth_scopes
-  node_pools_tags                   = var.node_pools_tags
-  node_version                      = var.node_version
+  network_policy           = var.network_policy
+  network_policy_provider  = var.network_policy_provider
+  cluster_resource_labels  = var.cluster_resource_labels
+  grant_registry_access    = var.grant_registry_access
+  issue_client_certificate = var.issue_client_certificate
+  kubernetes_version       = var.kubernetes_version
+  logging_service          = var.logging_service
+  maintenance_start_time   = var.maintenance_start_time
+  monitoring_service       = var.monitoring_service
+  node_pools               = var.node_pools
+  node_pools_labels        = var.node_pools_labels
+  node_pools_metadata      = var.node_pools_metadata
+  node_pools_oauth_scopes  = var.node_pools_oauth_scopes
+  node_pools_tags          = var.node_pools_tags
+  node_version             = var.node_version
 
-  authenticator_security_group      = var.authenticator_security_group
-  cloudrun                          = var.cloudrun
-  database_encryption               = var.database_encryption
-  default_max_pods_per_node         = var.default_max_pods_per_node
-  enable_binary_authorization       = var.enable_binary_authorization
-  enable_intranode_visibility       = var.enable_intranode_visibility
+  authenticator_security_group = var.authenticator_security_group
+  cloudrun                     = var.cloudrun
+  database_encryption          = var.database_encryption
+  default_max_pods_per_node    = var.default_max_pods_per_node
+  enable_binary_authorization  = var.enable_binary_authorization
+  enable_intranode_visibility  = var.enable_intranode_visibility
 
-  initial_node_count                = var.initial_node_count
-  remove_default_node_pool          = var.remove_default_node_pool
-  deploy_using_private_endpoint     = var.deploy_using_private_endpoint
-  enable_private_endpoint           = var.enable_private_endpoint
-  enable_private_nodes              = var.enable_private_nodes
-  master_ipv4_cidr_block            = var.master_ipv4_cidr_block
-  enable_vertical_pod_autoscaling   = var.enable_vertical_pod_autoscaling
+  initial_node_count              = var.initial_node_count
+  remove_default_node_pool        = var.remove_default_node_pool
+  deploy_using_private_endpoint   = var.deploy_using_private_endpoint
+  enable_private_endpoint         = var.enable_private_endpoint
+  enable_private_nodes            = var.enable_private_nodes
+  master_ipv4_cidr_block          = var.master_ipv4_cidr_block
+  enable_vertical_pod_autoscaling = var.enable_vertical_pod_autoscaling
 
-#  enable_shielded_nodes             = var.enable_shielded_nodes
-  identity_namespace                = var.identity_namespace
-  istio                             = var.istio
-  node_metadata                     = var.node_metadata
-  node_pools_taints                 = var.node_pools_taints
-  pod_security_policy_config        = var.pod_security_policy_config
-#  release_channel                   = var.release_channel
-  resource_usage_export_dataset_id  = var.resource_usage_export_dataset_id
-  sandbox_enabled                   = var.sandbox_enabled  
+  #  enable_shielded_nodes             = var.enable_shielded_nodes
+  identity_namespace         = var.identity_namespace
+  istio                      = var.istio
+  node_metadata              = var.node_metadata
+  node_pools_taints          = var.node_pools_taints
+  pod_security_policy_config = var.pod_security_policy_config
+  #  release_channel                   = var.release_channel
+  resource_usage_export_dataset_id = var.resource_usage_export_dataset_id
+  sandbox_enabled                  = var.sandbox_enabled
 }
 
 data "google_client_config" "default" {

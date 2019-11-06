@@ -16,31 +16,31 @@
 
 output "internal_ranges" {
   description = "Internal ranges."
-  value = module.firewall.internal_ranges
+  value       = module.firewall.internal_ranges
 }
 
 output "admin_ranges" {
   description = "Admin ranges data."
-  value = module.firewall.admin_ranges
+  value       = module.firewall.admin_ranges
 }
 
 output "custom_ingress_allow_rules" {
   description = "Custom ingress rules with allow blocks."
-  value = module.firewall.custom_ingress_allow_rules
+  value       = module.firewall.custom_ingress_allow_rules
 }
 
 output "custom_ingress_deny_rules" {
   description = "Custom ingress rules with deny blocks."
-  value = module.firewall.custom_ingress_deny_rules
+  value       = module.firewall.custom_ingress_deny_rules
 }
 
 output "custom_egress_allow_rules" {
   description = "Custom egress rules with allow blocks."
-  value = module.firewall.custom_egress_allow_rules
+  value       = module.firewall.custom_egress_allow_rules
 }
 
 output "custom_egress_deny_rules" {
   description = "Custom egress rules with allow blocks."
-  value = module.firewall.custom_egress_deny_rules
+  value       = module.firewall.custom_egress_deny_rules
 }
 

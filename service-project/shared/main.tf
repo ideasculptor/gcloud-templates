@@ -17,16 +17,16 @@
 locals {
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
-  folder_id = regex("folders/(.+)", data.terraform_remote_state.parent.outputs.folder_id)[0]
-  project_name = "${var.project_short_name} svc - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name = "refarch-${var.project_short_name}-svc-admin"
+  folder_id         = regex("folders/(.+)", data.terraform_remote_state.parent.outputs.folder_id)[0]
+  project_name      = "${var.project_short_name} svc - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  group_name        = "refarch-${var.project_short_name}-svc-admin"
   project_id_prefix = "refarch-${var.project_short_name}-svc"
-  sa_group = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
+  sa_group          = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
 module "project" {
-  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-#  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
+  source = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
+  #  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -43,57 +43,57 @@ module "project" {
   auto_create_network     = "false"
   activate_apis           = var.project_services
 
-  usage_bucket_name       = data.terraform_remote_state.parent.outputs.logs_bucket_name
-  usage_bucket_prefix     = "usage/${local.project_id_prefix}"
+  usage_bucket_name   = data.terraform_remote_state.parent.outputs.logs_bucket_name
+  usage_bucket_prefix = "usage/${local.project_id_prefix}"
 
-  credentials_path        = var.gsuite_credentials
-#  pip3_extra_flags        = "--user"
+  credentials_path = var.gsuite_credentials
+  #  pip3_extra_flags        = "--user"
 
-  shared_vpc_enabled      = "true"
-  shared_vpc              = data.terraform_remote_state.dev.outputs.project_id
+  shared_vpc_enabled = "true"
+  shared_vpc         = data.terraform_remote_state.dev.outputs.project_id
 }
 
 module "org-iam" {
-  source  = "terraform-google-modules/iam/google//modules/organizations_iam"
+  source = "terraform-google-modules/iam/google//modules/organizations_iam"
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
-  organizations = [var.organization]
+  organizations     = [var.organization]
   organizations_num = 1
 
-  mode = "additive"
+  mode         = "additive"
   bindings_num = var.org_roles_num
   bindings = zipmap(
     var.org_roles,
-    [for s in var.org_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.org_roles : ["group:${module.project.group_email}"]]
   )
 }
 
 module "folder-iam" {
-  source  = "terraform-google-modules/iam/google//modules/folders_iam"
+  source = "terraform-google-modules/iam/google//modules/folders_iam"
 
-  folders = [local.folder_id]
+  folders     = [local.folder_id]
   folders_num = 1
 
-  mode = "additive"
+  mode         = "additive"
   bindings_num = var.folder_roles_num
   bindings = zipmap(
     var.folder_roles,
-    [for s in var.folder_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.folder_roles : ["group:${module.project.group_email}"]]
   )
 }
 
 module "projects-iam" {
-  source  = "terraform-google-modules/iam/google//modules/projects_iam"
+  source = "terraform-google-modules/iam/google//modules/projects_iam"
 
-  projects = [module.project.project_id]
+  projects     = [module.project.project_id]
   projects_num = 1
 
-  mode = "additive"
+  mode         = "additive"
   bindings_num = var.project_roles_num
   bindings = zipmap(
     var.project_roles,
-    [for s in var.project_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.project_roles : ["group:${module.project.group_email}"]]
   )
 }
 

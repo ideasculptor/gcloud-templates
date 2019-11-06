@@ -15,18 +15,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 locals {
-  env_name = "${var.environment} env - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  project_name = "${var.environment} project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name = "refarch-${var.environment}-admin"
+  env_name          = "${var.environment} env - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  project_name      = "${var.environment} project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  group_name        = "refarch-${var.environment}-admin"
   project_id_prefix = "refarch-${var.environment}"
-  sa_group = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
+  sa_group          = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
 module "folder" {
-  source = "terraform-google-modules/folders/google"
+  source  = "terraform-google-modules/folders/google"
   version = "~> 2.0"
-  parent = data.terraform_remote_state.parent.outputs.folder_id
-  names = [local.env_name]
+  parent  = data.terraform_remote_state.parent.outputs.folder_id
+  names   = [local.env_name]
 }
 
 locals {
@@ -35,9 +35,9 @@ locals {
 
 # The root project for infrastructure
 module "project" {
-#  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-#  version                 = "3.3.1"
-  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
+  #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
+  #  version                 = "3.3.1"
+  source = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -54,42 +54,42 @@ module "project" {
   auto_create_network     = "false"
   activate_apis           = var.project_services
 
-  usage_bucket_name       = data.terraform_remote_state.parent.outputs.logs_bucket_name
-  usage_bucket_prefix     = "usage/${local.project_id_prefix}"
+  usage_bucket_name   = data.terraform_remote_state.parent.outputs.logs_bucket_name
+  usage_bucket_prefix = "usage/${local.project_id_prefix}"
 
-  credentials_path        = var.gsuite_credentials
-  pip3_extra_flags        = "--user"
+  credentials_path = var.gsuite_credentials
+  pip3_extra_flags = "--user"
 }
 
 module "folder-iam" {
-  source  = "terraform-google-modules/iam/google//modules/folders_iam"
+  source = "terraform-google-modules/iam/google//modules/folders_iam"
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
-  folders = [local.folder_id]
+  folders     = [local.folder_id]
   folders_num = 1
 
-  mode = "additive"
+  mode         = "additive"
   bindings_num = var.folder_roles_num
   bindings = zipmap(
     var.folder_roles,
-    [for s in var.folder_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.folder_roles : ["group:${module.project.group_email}"]]
   )
 }
 
 module "org-iam" {
-  source  = "terraform-google-modules/iam/google//modules/organizations_iam"
+  source = "terraform-google-modules/iam/google//modules/organizations_iam"
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
-  organizations = [var.organization]
+  organizations     = [var.organization]
   organizations_num = 1
 
-  mode = "additive"
+  mode         = "additive"
   bindings_num = var.org_roles_num
   bindings = zipmap(
     var.org_roles,
-    [for s in var.org_roles : [ "group:${module.project.group_email}" ]]
+    [for s in var.org_roles : ["group:${module.project.group_email}"]]
   )
 }
 
@@ -104,10 +104,10 @@ resource "gsuite_group_member" "admin_group_member" {
 module "vpc" {
   # source          = "terraform-google-modules/network/google"
   # version         = "~> 1.4.0"
-  source          = "git@github.com:ideasculptor/terraform-google-network.git?ref=master"
+  source = "git@github.com:ideasculptor/terraform-google-network.git?ref=master"
 
-  project_id      = module.project.project_id
-  network_name    = "${var.environment}-vpc"
+  project_id   = module.project.project_id
+  network_name = "${var.environment}-vpc"
 
   shared_vpc_host = true
   create_network  = true

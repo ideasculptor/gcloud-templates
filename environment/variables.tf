@@ -83,12 +83,12 @@ variable "admin_members_num" {
 }
 
 variable "admin_members" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "org_roles" {
-  default = [ "roles/resourcemanager.organizationViewer" ]
+  default = ["roles/resourcemanager.organizationViewer"]
 }
 
 variable "org_roles_num" {

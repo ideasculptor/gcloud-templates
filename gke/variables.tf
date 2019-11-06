@@ -35,27 +35,27 @@ variable "region" {
 }
 
 variable "use_project_service_account" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "subnets_path" {
-  type = string
+  type    = string
   default = "public_subnets"
 }
 
 variable "subnet_short_name" {
-  type = string
+  type    = string
   default = "gke"
 }
 
 variable "pods_range_short_name" {
-  type = string
+  type    = string
   default = "pods"
 }
 
 variable "services_range_short_name" {
-  type = string
+  type    = string
   default = "services"
 }
 
@@ -90,9 +90,9 @@ variable "node_version" {
 }
 
 variable "authorized_cidr_blocks" {
-  type = list(object({ cidr_block = string, display_name = string }))
+  type        = list(object({ cidr_block = string, display_name = string }))
   description = "a list of cidr_blocks and display names of subnets that are authorized to communicate directly with the GKE endpoint"
-  default = []
+  default     = []
 }
 
 variable "master_authorized_networks_config" {
