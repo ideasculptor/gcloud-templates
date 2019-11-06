@@ -29,14 +29,14 @@ module "bastion" {
   # version = ">= 0.1.1"
   source = "git@github.com:terraform-google-modules/terraform-google-bastion-host.git"
 
-  project = data.terraform_remote_state.service-project.outputs.project_id
+  project = data.terraform_remote_state.service_project.outputs.project_id
   host_project = data.terraform_remote_state.env.outputs.project_id
   region = var.region
   zone = "${var.region}-a"
   network = data.terraform_remote_state.env.outputs.network_self_link
   subnet = local.admin_subnets[0]
   members = [
-    "group:${data.terraform_remote_state.service-project.outputs.group_email}",
+    "group:${data.terraform_remote_state.service_project.outputs.group_email}",
   ]
   image = var.image
   machine_type = var.machine_type

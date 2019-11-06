@@ -111,3 +111,8 @@ output "service_account" {
   value       = module.gke.service_account
 }
 
+output "client_token" {
+  sensitive = true
+  value     = base64encode(data.google_client_config.default.access_token)
+}
+

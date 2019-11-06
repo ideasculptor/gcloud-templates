@@ -34,6 +34,11 @@ variable "region" {
   description = "Id of the region to create bastion within"
 }
 
+variable "use_project_service_account" {
+  type = bool
+  default = false
+}
+
 variable "subnets_path" {
   type = string
   default = "public_subnets"
@@ -82,6 +87,12 @@ variable "node_version" {
   type        = string
   description = "The Kubernetes version of the node pools. Defaults kubernetes_version (master) variable and can be overridden for individual node pools by setting the `version` key on them. Must be empyty or set the same as master at cluster creation."
   default     = ""
+}
+
+variable "authorized_cidr_blocks" {
+  type = list(object({ cidr_block = string, display_name = string }))
+  description = "a list of cidr_blocks and display names of subnets that are authorized to communicate directly with the GKE endpoint"
+  default = []
 }
 
 variable "master_authorized_networks_config" {

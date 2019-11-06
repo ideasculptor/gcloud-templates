@@ -30,7 +30,7 @@ data "terraform_remote_state" "public_subnets" {
   }
 }
 
-data "terraform_remote_state" "service-project" {
+data "terraform_remote_state" "service_project" {
   backend = "gcs"
   config = {
     bucket = var.terraform_state_bucket
