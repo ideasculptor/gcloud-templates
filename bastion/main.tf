@@ -50,6 +50,7 @@ module "bastion" {
   shielded_vm    = var.shielded_vm
   machine_type   = var.machine_type
   startup_script = data.template_file.startup_script.rendered
+  tags           = var.tags
   labels         = var.labels
   random_role_id = true
 }

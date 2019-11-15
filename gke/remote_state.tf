@@ -22,11 +22,19 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-data "terraform_remote_state" "subnets" {
+data "terraform_remote_state" "backend_subnets" {
   backend = "gcs"
   config = {
     bucket = var.terraform_state_bucket
-    prefix = "${var.terraform_state_prefix}/${var.parent_path}/${var.environment}/${var.region}/${var.environment}/${var.subnets_path}"
+    prefix = "${var.terraform_state_prefix}/${var.parent_path}/${var.environment}/${var.region}/${var.environment}/${var.backend_subnets_path}"
+  }
+}
+
+data "terraform_remote_state" "public_subnets" {
+  backend = "gcs"
+  config = {
+    bucket = var.terraform_state_bucket
+    prefix = "${var.terraform_state_prefix}/${var.parent_path}/${var.environment}/${var.region}/${var.environment}/${var.public_subnets_path}"
   }
 }
 

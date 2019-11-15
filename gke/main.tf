@@ -22,14 +22,28 @@ locals {
   ip_range_pods      = "${local.subnetwork}-${var.pods_range_short_name}"
   ip_range_services  = "${local.subnetwork}-${var.services_range_short_name}"
 
-  subnets = zipmap(data.terraform_remote_state.subnets.outputs.subnets_names,
-  data.terraform_remote_state.subnets.outputs.subnets_ips)
-  subnet_cidr_blocks = concat(var.authorized_cidr_blocks, [
-    for name in data.terraform_remote_state.subnets.outputs.subnets_names : {
-      cidr_block   = local.subnets[name]
-      display_name = local.subnetwork
-    } if name == local.subnetwork
-  ])
+  subnets_names = concat(data.terraform_remote_state.backend_subnets.outputs.subnets_names,
+                         data.terraform_remote_state.public_subnets.outputs.subnets_names)
+  subnets_ips   = concat(data.terraform_remote_state.backend_subnets.outputs.subnets_ips,
+                         data.terraform_remote_state.public_subnets.outputs.subnets_ips)
+  subnets       = zipmap(local.subnets_names, local.subnets_ips)
+
+  authorized_subnets = [ for name in var.authorized_subnets :
+                         "${var.environment}-${var.region}-${name}" ]
+
+  subnet_cidr_blocks = concat(
+    var.authorized_cidr_blocks,
+    [ for name in local.subnets_names : {
+        cidr_block   = local.subnets[name]
+        display_name = name
+      } if name == local.subnetwork
+    ],
+    [ for name in local.subnets_names : {
+        cidr_block   = local.subnets[name]
+        display_name = name
+      } if contains(local.authorized_subnets, name)
+    ],
+  )
   master_authorized_networks_config = [{
     cidr_blocks = local.subnet_cidr_blocks
   }]
