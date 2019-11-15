@@ -34,7 +34,7 @@ data "template_file" "startup_script" {
 module "bastion" {
 #  source = "terraform-google-modules/bastion-host/google"
 #  version = ">= 0.2.0"
-  source = "git@github.com:ideasculptor/terraform-google-bastion-host.git?ref=dynamic_role_id"
+  source = "git@github.com:terraform-google-modules/terraform-google-bastion-host.git"
 
   project        = data.terraform_remote_state.service_project.outputs.project_id
   host_project   = data.terraform_remote_state.env.outputs.project_id
