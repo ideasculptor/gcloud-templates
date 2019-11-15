@@ -26,6 +26,10 @@ variable "parent_path" {
   type = string
 }
 
+variable "project_short_name" {
+  type = string
+}
+
 variable "environment" {
   description = "Name of the environment to create"
 }
@@ -122,7 +126,7 @@ variable "kubernetes_dashboard" {
 variable "network_policy" {
   type        = bool
   description = "Enable network policy addon"
-  default     = false
+  default     = true
 }
 
 variable "network_policy_provider" {

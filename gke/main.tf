@@ -38,7 +38,6 @@ locals {
 module "gke" {
   # source = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
   source = "git@github.com:terraform-google-modules/terraform-google-kubernetes-engine.git//modules/beta-private-cluster-update-variant"
-#  source = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster"
 
   project_id                        = local.project_id
   network_project_id                = local.network_project_id
