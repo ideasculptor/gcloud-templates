@@ -24,21 +24,32 @@ locals {
   ]
 }
 
-module "bastion" {
-  # source = "terraform-google-modules/bastion-host/google"
-  # version = ">= 0.1.1"
-  source = "git@github.com:terraform-google-modules/terraform-google-bastion-host.git"
+data "template_file" "startup_script" {
+  template = <<-EOF
+  sudo apt-get update -y
+  sudo apt-get install -y tinyproxy
+  EOF
+}
 
-  project      = data.terraform_remote_state.service_project.outputs.project_id
-  host_project = data.terraform_remote_state.env.outputs.project_id
-  region       = var.region
-  zone         = "${var.region}-a"
-  network      = data.terraform_remote_state.env.outputs.network_self_link
-  subnet       = local.admin_subnets[0]
-  members = [
+module "bastion" {
+#  source = "terraform-google-modules/bastion-host/google"
+#  version = ">= 0.2.0"
+  source = "git@github.com:ideasculptor/terraform-google-bastion-host.git?ref=dynamic_role_id"
+
+  project        = data.terraform_remote_state.service_project.outputs.project_id
+  host_project   = data.terraform_remote_state.env.outputs.project_id
+  region         = var.region
+  zone           = "${var.region}-a"
+  network        = data.terraform_remote_state.env.outputs.network_self_link
+  subnet         = local.admin_subnets[0]
+  members        = [
     "group:${data.terraform_remote_state.service_project.outputs.group_email}",
   ]
-  image        = var.image
-  machine_type = var.machine_type
-  labels       = var.labels
+  image_family   = var.image_family
+  image_project  = var.image_project
+  shielded_vm    = var.shielded_vm
+  machine_type   = var.machine_type
+  startup_script = data.template_file.startup_script.rendered
+  labels         = var.labels
+  random_role_id = true
 }

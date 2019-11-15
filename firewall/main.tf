@@ -36,6 +36,15 @@ locals {
   )
 }
 
+module "nat" {
+  source        = "terraform-google-modules/cloud-nat/google"
+  project_id    = data.terraform_remote_state.vpc.outputs.project_id
+  region        = var.region
+  create_router = "true"
+  router        = "${var.environment}-cloud-nat"
+  network       = data.terraform_remote_state.vpc.outputs.network_name
+}
+
 module "firewall" {
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = data.terraform_remote_state.vpc.outputs.project_id
