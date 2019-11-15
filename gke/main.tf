@@ -36,7 +36,9 @@ locals {
 }
 
 module "gke" {
-  source = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster"
+  # source = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
+  source = "git@github.com:terraform-google-modules/terraform-google-kubernetes-engine.git//modules/beta-private-cluster-update-variant"
+#  source = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster"
 
   project_id                        = local.project_id
   network_project_id                = local.network_project_id
@@ -56,6 +58,7 @@ module "gke" {
   http_load_balancing               = var.http_load_balancing
   horizontal_pod_autoscaling        = var.horizontal_pod_autoscaling
   kubernetes_dashboard              = var.kubernetes_dashboard
+  disable_legacy_metadata_endpoints = var.disable_legacy_metadata_endpoints
 
   network_policy           = var.network_policy
   network_policy_provider  = var.network_policy_provider
@@ -88,13 +91,13 @@ module "gke" {
   master_ipv4_cidr_block          = var.master_ipv4_cidr_block
   enable_vertical_pod_autoscaling = var.enable_vertical_pod_autoscaling
 
-  #  enable_shielded_nodes             = var.enable_shielded_nodes
+  enable_shielded_nodes             = var.enable_shielded_nodes
   identity_namespace         = var.identity_namespace
   istio                      = var.istio
   node_metadata              = var.node_metadata
   node_pools_taints          = var.node_pools_taints
   pod_security_policy_config = var.pod_security_policy_config
-  #  release_channel                   = var.release_channel
+  release_channel                   = var.release_channel
   resource_usage_export_dataset_id = var.resource_usage_export_dataset_id
   sandbox_enabled                  = var.sandbox_enabled
 }

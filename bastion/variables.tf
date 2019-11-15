@@ -39,9 +39,14 @@ variable "public_subnets_path" {
   default = "public_subnets"
 }
 
-variable "image" {
-  description = "GCE image on which to base the Bastion. This image is supported by Shielded VM"
-  default     = "gce-uefi-images/centos-7"
+variable "image_family" {
+  description = "Source image family for the Bastion."
+  default     = "ubuntu-1804-lts"
+}
+
+variable "image_project" {
+  description = "Project where the source image for the Bastion comes from"
+  default     = "gce-uefi-images"
 }
 
 variable "labels" {
@@ -53,5 +58,9 @@ variable "labels" {
 variable "machine_type" {
   description = "Instance type for the Bastion host"
   default     = "n1-standard-1"
+}
+
+variable "shielded_vm" {
+  default = true
 }
 

@@ -149,6 +149,12 @@ variable "remove_default_node_pool" {
   default     = true
 }
 
+variable "disable_legacy_metadata_endpoints" {
+  type        = bool
+  description = "Disable the /0.1/ and /v1beta1/ metadata server endpoints on the node. Changing this value will cause all node pools to be recreated."
+  default     = true
+}
+
 variable "node_pools" {
   type        = list(map(string))
   description = "List of maps containing node pools"
@@ -213,13 +219,13 @@ variable "node_pools_oauth_scopes" {
 variable "logging_service" {
   type        = string
   description = "The logging service that the cluster should write logs to. Available options include logging.googleapis.com, logging.googleapis.com/kubernetes (beta), and none"
-  default     = "logging.googleapis.com"
+  default     = "logging.googleapis.com/kubernetes"
 }
 
 variable "monitoring_service" {
   type        = string
   description = "The monitoring service that the cluster should write metrics to. Automatically send metrics from pods in the cluster to the Google Cloud Monitoring API. VM metrics will be collected by Google Compute Engine regardless of this setting Available options include monitoring.googleapis.com, monitoring.googleapis.com/kubernetes (beta) and none"
-  default     = "monitoring.googleapis.com"
+  default     = "monitoring.googleapis.com/kubernetes"
 }
 
 variable "create_service_account" {
