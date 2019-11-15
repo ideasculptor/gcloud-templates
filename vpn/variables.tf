@@ -34,39 +34,3 @@ variable "region" {
   description = "Id of the region to create bastion within"
 }
 
-variable "public_subnets_path" {
-  type    = string
-  default = "public_subnets"
-}
-
-variable "image_family" {
-  description = "Source image family for the Bastion."
-  default     = "ubuntu-1804-lts"
-}
-
-variable "image_project" {
-  description = "Project where the source image for the Bastion comes from"
-  default     = "gce-uefi-images"
-}
-
-variable "tags" {
-  type        = list(string)
-  description = "Network tags, provided as a list"
-  default     = ["bastion", "egress"]
-}
-
-variable "labels" {
-  description = "Key-value map of labels to assign to the bastion host"
-  type        = "map"
-  default     = {}
-}
-
-variable "machine_type" {
-  description = "Instance type for the Bastion host"
-  default     = "n1-standard-1"
-}
-
-variable "shielded_vm" {
-  default = true
-}
-

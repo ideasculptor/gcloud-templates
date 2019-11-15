@@ -116,3 +116,17 @@ output "client_token" {
   value     = base64encode(data.google_client_config.default.access_token)
 }
 
+output "get_credentials" {
+  description = "Gcloud get-credentials command"
+  value       = format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", local.project_id, module.gke.location, module.gke.name)
+}
+
+output "bastion_ssh" {
+  description = "Gcloud compute ssh to the bastion host command"
+  value       = format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -L8888:%s:8888", data.terraform_remote_state.bastion.outputs.hostname, local.project_id, regex(".*/zones/(.*)/instances/*", data.terraform_remote_state.bastion.outputs.self_link)[0], module.gke.endpoint)
+}
+
+output "bastion_kubectl" {
+  description = "kubectl command using the local proxy once the bastion_ssh command is running"
+  value       = "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces"
+}

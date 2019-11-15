@@ -26,6 +26,10 @@ variable "parent_path" {
   type = string
 }
 
+variable "project_short_name" {
+  type = string
+}
+
 variable "environment" {
   description = "Name of the environment to create"
 }
@@ -39,7 +43,12 @@ variable "use_project_service_account" {
   default = false
 }
 
-variable "subnets_path" {
+variable "backend_subnets_path" {
+  type    = string
+  default = "backend_subnets"
+}
+
+variable "public_subnets_path" {
   type    = string
   default = "public_subnets"
 }
@@ -95,10 +104,10 @@ variable "authorized_cidr_blocks" {
   default     = []
 }
 
-variable "master_authorized_networks_config" {
-  type        = list(object({ cidr_blocks = list(object({ cidr_block = string, display_name = string })) }))
-  description = "The desired configuration options for master authorized networks. The object format is {cidr_blocks = list(object({cidr_block = string, display_name = string}))}. Omit the nested cidr_blocks attribute to disallow external access (except the cluster node IPs, which GKE automatically whitelists)."
-  default     = []
+variable "authorized_subnets" {
+  type        = list(string)
+  description = "list of subnet names that should be added to master_authorized_networks_config"
+  default     = ["admin"]
 }
 
 variable "horizontal_pod_autoscaling" {
@@ -122,7 +131,7 @@ variable "kubernetes_dashboard" {
 variable "network_policy" {
   type        = bool
   description = "Enable network policy addon"
-  default     = false
+  default     = true
 }
 
 variable "network_policy_provider" {
