@@ -18,7 +18,3 @@ output "firewall" {
   value = module.firewall
 }
 
-output "nat" {
-  value = module.nat
-}
-

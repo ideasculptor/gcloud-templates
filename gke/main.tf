@@ -1,6 +1,5 @@
 # Terragrunt templates to support a reference architecture for gcloud
-# Copyright (C) 2019 Samuel Gendler
-# 
+# Copyright (C) 2019 Samuel Gendler # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
 # by the Free Software Foundation, either version 3 of the License, or
@@ -113,6 +112,20 @@ module "gke" {
   release_channel                   = var.release_channel
   resource_usage_export_dataset_id = var.resource_usage_export_dataset_id
   sandbox_enabled                  = var.sandbox_enabled
+}
+
+module "projects-iam" {
+  source = "terraform-google-modules/iam/google//modules/projects_iam"
+
+  projects     = [local.project_id]
+
+  mode         = "additive"
+  bindings = zipmap(
+    var.project_roles,
+    [ for s in var.project_roles :
+        ["serviceAccount:${module.gke.service_account}"]
+    ]
+  )
 }
 
 data "google_client_config" "default" {
