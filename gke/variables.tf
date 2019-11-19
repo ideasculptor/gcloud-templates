@@ -381,3 +381,13 @@ variable "enable_shielded_nodes" {
   default     = false
 }
 
+variable "project_roles" {
+  type        = list(string)
+  description = "Project-scope roles that should be added to the service account"
+  default     = [
+    "roles/cloudtrace.agent",
+    "roles/monitoring.metricWriter",
+    "roles/logging.logWriter"
+  ]
+}
+

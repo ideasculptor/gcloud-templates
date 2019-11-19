@@ -33,3 +33,9 @@ output "self_link" {
   description = "Self link of the bastion host"
   value       = module.bastion.self_link
 }
+
+output "bastion_ssh" {
+  description = "Gcloud compute ssh to the bastion host command"
+  value       = format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s", module.bastion.hostname, data.terraform_remote_state.service_project.outputs.project_id, regex(".*/zones/(.*)/instances/*", module.bastion.self_link)[0])
+}
+

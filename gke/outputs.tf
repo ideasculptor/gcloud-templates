@@ -111,6 +111,11 @@ output "service_account" {
   value       = module.gke.service_account
 }
 
+output "gke" {
+  description = "The outputs exported by the gke module"
+  value       = module.gke
+}
+
 output "client_token" {
   sensitive = true
   value     = base64encode(data.google_client_config.default.access_token)
@@ -123,7 +128,7 @@ output "get_credentials" {
 
 output "bastion_ssh" {
   description = "Gcloud compute ssh to the bastion host command"
-  value       = format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -L8888:%s:8888", data.terraform_remote_state.bastion.outputs.hostname, local.project_id, regex(".*/zones/(.*)/instances/*", data.terraform_remote_state.bastion.outputs.self_link)[0], module.gke.endpoint)
+  value       = format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -A -L8888:localhost:8888", data.terraform_remote_state.bastion.outputs.hostname, local.project_id, regex(".*/zones/(.*)/instances/*", data.terraform_remote_state.bastion.outputs.self_link)[0])
 }
 
 output "bastion_kubectl" {

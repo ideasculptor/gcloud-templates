@@ -67,11 +67,13 @@ variable "project_services" {
   default = [
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
+    "cloudtrace.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
     "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "serviceusage.googleapis.com",
     "storage-api.googleapis.com",
   ]

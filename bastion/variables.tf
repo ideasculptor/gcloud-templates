@@ -39,6 +39,11 @@ variable "public_subnets_path" {
   default = "public_subnets"
 }
 
+variable "backend_subnets_path" {
+  type    = string
+  default = "backend_subnets"
+}
+
 variable "image_family" {
   description = "Source image family for the Bastion."
   default     = "ubuntu-1804-lts"

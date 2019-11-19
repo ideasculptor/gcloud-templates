@@ -1,6 +1,5 @@
 # Terragrunt templates to support a reference architecture for gcloud
-# Copyright (C) 2019 Samuel Gendler
-# 
+# Copyright (C) 2019 Samuel Gendler # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
 # by the Free Software Foundation, either version 3 of the License, or
@@ -56,7 +55,7 @@ module "gke" {
   project_id                        = local.project_id
   network_project_id                = local.network_project_id
   registry_project_id               = local.project_id
-  name                              = "gke-${var.environment}"
+  name                              = "${var.environment}"
   description                       = var.description
   region                            = var.region
   regional                          = var.regional
@@ -113,6 +112,29 @@ module "gke" {
   release_channel                   = var.release_channel
   resource_usage_export_dataset_id = var.resource_usage_export_dataset_id
   sandbox_enabled                  = var.sandbox_enabled
+}
+
+module "projects-iam" {
+  source      = "terraform-google-modules/iam/google//modules/projects_iam"
+
+  project     = local.project_id
+  mode        = "additive"
+  bindings    = zipmap(
+    var.project_roles,
+    [ for s in var.project_roles :
+      ["serviceAccount:${module.gke.service_account}"]
+    ]
+  )
+}
+
+resource "google_compute_route" "node-egress" {
+  project                = local.network_project_id
+  network                           = local.network
+  name             = "gke-${module.gke.name}-egress"
+  description      = "Allow gke-${module.gke.name} nodes to talk to *.googleapis.com"
+  tags             = ["gke-${module.gke.name}"]
+  dest_range       = "0.0.0.0/0"
+  next_hop_gateway = "default-internet-gateway"
 }
 
 data "google_client_config" "default" {
