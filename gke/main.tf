@@ -55,7 +55,7 @@ module "gke" {
   project_id                        = local.project_id
   network_project_id                = local.network_project_id
   registry_project_id               = local.project_id
-  name                              = "gke-${var.environment}"
+  name                              = "${var.environment}"
   description                       = var.description
   region                            = var.region
   regional                          = var.regional
@@ -115,17 +115,26 @@ module "gke" {
 }
 
 module "projects-iam" {
-  source = "terraform-google-modules/iam/google//modules/projects_iam"
+  source      = "terraform-google-modules/iam/google//modules/projects_iam"
 
-  projects     = [local.project_id]
-
-  mode         = "additive"
-  bindings = zipmap(
+  project     = local.project_id
+  mode        = "additive"
+  bindings    = zipmap(
     var.project_roles,
     [ for s in var.project_roles :
-        ["serviceAccount:${module.gke.service_account}"]
+      ["serviceAccount:${module.gke.service_account}"]
     ]
   )
+}
+
+resource "google_compute_route" "node-egress" {
+  project                = local.network_project_id
+  network                           = local.network
+  name             = "gke-${module.gke.name}-egress"
+  description      = "Allow gke-${module.gke.name} nodes to talk to *.googleapis.com"
+  tags             = ["gke-${module.gke.name}"]
+  dest_range       = "0.0.0.0/0"
+  next_hop_gateway = "default-internet-gateway"
 }
 
 data "google_client_config" "default" {

@@ -30,6 +30,15 @@ data "terraform_remote_state" "public_subnets" {
   }
 }
 
+data "terraform_remote_state" "backend_subnets" {
+  backend = "gcs"
+  config = {
+    bucket = var.terraform_state_bucket
+    prefix = "${var.terraform_state_prefix}/${var.parent_path}/${var.environment}/${var.region}/${var.environment}/${var.backend_subnets_path}"
+  }
+}
+
+
 data "terraform_remote_state" "service_project" {
   backend = "gcs"
   config = {
