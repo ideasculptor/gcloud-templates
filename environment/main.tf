@@ -17,14 +17,15 @@
 locals {
   env_name          = "${var.environment} env - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
   project_name      = "${var.environment} project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name        = "refarch-${var.environment}-admin"
-  project_id_prefix = "refarch-${var.environment}"
+  project_prefix    = var.project_prefix == null ? "${data.terraform_remote_state.parent.outputs.infrastructure_short_name}-" : var.project_prefix
+  group_name        = "${local.project_prefix}${var.environment}-admin"
+  project_id_prefix = "${local.project_prefix}${var.environment}"
   sa_group          = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
 module "folder" {
   source  = "terraform-google-modules/folders/google"
-  version = "~> 2.0"
+  version = "~> 2.0.1"
   parent  = data.terraform_remote_state.parent.outputs.folder_id
   names   = [local.env_name]
 }
@@ -35,9 +36,9 @@ locals {
 
 # The root project for infrastructure
 module "project" {
-  #  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-  #  version                 = "3.3.1"
-  source = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
+  source                  = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
+  version                 = "~> 5.0.0"
+  # source = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=pip3_extra_flags"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -58,19 +59,17 @@ module "project" {
   usage_bucket_prefix = "usage/${local.project_id_prefix}"
 
   credentials_path = var.gsuite_credentials
-  pip3_extra_flags = "--user"
 }
 
 module "folder-iam" {
   source = "terraform-google-modules/iam/google//modules/folders_iam"
+  version                 = "~> 5.0.0"
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
   folders     = [local.folder_id]
-  folders_num = 1
 
   mode         = "additive"
-  bindings_num = var.folder_roles_num
   bindings = zipmap(
     var.folder_roles,
     [for s in var.folder_roles : ["group:${module.project.group_email}"]]
@@ -79,14 +78,13 @@ module "folder-iam" {
 
 module "org-iam" {
   source = "terraform-google-modules/iam/google//modules/organizations_iam"
+  version                 = "~> 5.0.0"
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
   organizations     = [var.organization]
-  organizations_num = 1
 
   mode         = "additive"
-  bindings_num = var.org_roles_num
   bindings = zipmap(
     var.org_roles,
     [for s in var.org_roles : ["group:${module.project.group_email}"]]

@@ -22,11 +22,3 @@ data "terraform_remote_state" "parent" {
   }
 }
 
-data "terraform_remote_state" "dev" {
-  backend = "gcs"
-  config = {
-    bucket = var.terraform_state_bucket
-    prefix = "${var.terraform_state_prefix}/${var.parent_path}/dev/environment"
-  }
-}
-

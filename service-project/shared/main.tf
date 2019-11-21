@@ -26,7 +26,7 @@ locals {
 
 module "project" {
   source = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-  #  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
+  version = "5.0.0"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -49,20 +49,18 @@ module "project" {
   credentials_path = var.gsuite_credentials
   #  pip3_extra_flags        = "--user"
 
-  shared_vpc_enabled = "true"
-  shared_vpc         = data.terraform_remote_state.dev.outputs.project_id
+  shared_vpc_enabled = "false"
 }
 
 module "org-iam" {
   source = "terraform-google-modules/iam/google//modules/organizations_iam"
+  version = "5.0.0"
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
   organizations     = [var.organization]
-  organizations_num = 1
 
   mode         = "additive"
-  bindings_num = var.org_roles_num
   bindings = zipmap(
     var.org_roles,
     [for s in var.org_roles : ["group:${module.project.group_email}"]]
@@ -71,12 +69,11 @@ module "org-iam" {
 
 module "folder-iam" {
   source = "terraform-google-modules/iam/google//modules/folders_iam"
+  version = "5.0.0"
 
   folders     = [local.folder_id]
-  folders_num = 1
 
   mode         = "additive"
-  bindings_num = var.folder_roles_num
   bindings = zipmap(
     var.folder_roles,
     [for s in var.folder_roles : ["group:${module.project.group_email}"]]
@@ -85,12 +82,11 @@ module "folder-iam" {
 
 module "projects-iam" {
   source = "terraform-google-modules/iam/google//modules/projects_iam"
+  version = "5.0.0"
 
-  projects     = [module.project.project_id]
-  projects_num = 1
+  project     = module.project.project_id
 
   mode         = "additive"
-  bindings_num = var.project_roles_num
   bindings = zipmap(
     var.project_roles,
     [for s in var.project_roles : ["group:${module.project.group_email}"]]
