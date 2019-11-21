@@ -18,16 +18,16 @@ locals {
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
   folder_id         = regex("folders/(.+)", data.terraform_remote_state.env.outputs.folder_id)[0]
-  project_name      = "${var.environment} service project - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
-  group_name        = "refarch-${var.environment}-svc-admin"
-  project_id_prefix = "refarch-${var.environment}-svc"
+  project_name      = "${var.project_short_name} svc - ${data.terraform_remote_state.parent.outputs.infrastructure_short_name}"
+  project_prefix    = var.project_prefix == null ? "${data.terraform_remote_state.parent.outputs.infrastructure_short_name}-" : var.project_prefix
+  group_name        = "${local.project_prefix}${var.project_short_name}-svc-admin"
+  project_id_prefix = "${local.project_prefix}${var.project_short_name}-svc"
   sa_group          = "${local.group_name}@${data.terraform_remote_state.parent.outputs.domain}"
 }
 
-# The service-project specifically for this environment
 module "project" {
   source = "terraform-google-modules/project-factory/google//modules/gsuite_enabled"
-  #  source                  = "git@github.com:ideasculptor/terraform-google-project-factory.git//modules/gsuite_enabled?ref=multiple_host_networks"
+  version = "5.0.0"
 
   folder_id               = local.folder_id
   billing_account         = var.billing_account_id
@@ -56,14 +56,13 @@ module "project" {
 
 module "org-iam" {
   source = "terraform-google-modules/iam/google//modules/organizations_iam"
+  version = "5.0.0"
 
   # Why is this necessary, module authors?  The resource returns the value,
   # how about an output to match?
   organizations     = [var.organization]
-  organizations_num = 1
 
   mode         = "additive"
-  bindings_num = var.org_roles_num
   bindings = zipmap(
     var.org_roles,
     [for s in var.org_roles : ["group:${module.project.group_email}"]]
@@ -72,12 +71,11 @@ module "org-iam" {
 
 module "folder-iam" {
   source = "terraform-google-modules/iam/google//modules/folders_iam"
+  version = "5.0.0"
 
   folders     = [local.folder_id]
-  folders_num = 1
 
   mode         = "additive"
-  bindings_num = var.folder_roles_num
   bindings = zipmap(
     var.folder_roles,
     [for s in var.folder_roles : ["group:${module.project.group_email}"]]
@@ -86,12 +84,11 @@ module "folder-iam" {
 
 module "projects-iam" {
   source = "terraform-google-modules/iam/google//modules/projects_iam"
+  version = "5.0.0"
 
-  projects     = [module.project.project_id]
-  projects_num = 1
+  project     = module.project.project_id
 
   mode         = "additive"
-  bindings_num = var.project_roles_num
   bindings = zipmap(
     var.project_roles,
     [for s in var.project_roles : ["group:${module.project.group_email}"]]

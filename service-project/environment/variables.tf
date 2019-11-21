@@ -38,6 +38,15 @@ variable "parent_template" {
   type = string
 }
 
+variable "project_short_name" {
+  type = string
+}
+
+variable "project_prefix" {
+  type = string
+  default = null
+}
+
 variable "billing_account_id" {
   type = string
 }
@@ -120,10 +129,11 @@ variable "project_roles" {
     "roles/container.developer",
     "roles/iam.serviceAccountUser",
     "roles/resourcemanager.projectIamAdmin",
+    "roles/serviceusage.serviceUsageAdmin",
   ]
 }
 
 variable "project_roles_num" {
-  default = 5
+  default = 6
 }
 
